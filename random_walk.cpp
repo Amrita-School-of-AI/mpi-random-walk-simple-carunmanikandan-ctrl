@@ -1,6 +1,6 @@
 #include <iostream>
-#include <cstdlib>  // For atoi, rand, srand
-#include <ctime>    // For time
+#include <cstdlib> // For atoi, rand, srand
+#include <ctime>   // For time
 #include <mpi.h>
 
 void walker_process();
@@ -13,7 +13,10 @@ int world_size;
 
 int main(int argc, char **argv)
 {
+    // Initialize the MPI environment
     MPI_Init(&argc, &argv);
+
+    // Get the number of processes and the rank of this process
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
 
@@ -27,21 +30,25 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    domain_size = std::atoi(argv[1]);
-    max_steps = std::atoi(argv[2]);
+    domain_size = atoi(argv[1]);
+    max_steps = atoi(argv[2]);
 
     if (world_rank == 0)
     {
+        // Rank 0 is the controller
         controller_process();
     }
     else
     {
+        // All other ranks are walkers
         walker_process();
     }
 
+    // Finalize the MPI environment
     MPI_Finalize();
     return 0;
 }
+
 
 void walker_process()
 {
